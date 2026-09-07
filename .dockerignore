@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints
+.pytest_cache
+tests/
+documents/*.py
+notebooks/build_and_run_notebook.py
+*.log
+.DS_Store
+.env

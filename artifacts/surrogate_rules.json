@@ -1,0 +1,29 @@
+[
+  {
+    "id": "RULE_HIGH_01",
+    "condition": "EXT_SOURCES_WEIGHTED <= 0.38 AND PAYMENT_RATE > 0.065",
+    "action": "DECLINE",
+    "risk_tier": "HIGH",
+    "default_rate": "26.4%",
+    "risk_lift": "3.27x",
+    "rationale": "Compounded vulnerability: Weak credit bureau ratings coupled with high monthly payment burden."
+  },
+  {
+    "id": "RULE_MED_02",
+    "condition": "EXT_SOURCES_WEIGHTED <= 0.45 AND DTI > 0.22",
+    "action": "MANUAL_REVIEW",
+    "risk_tier": "MEDIUM",
+    "default_rate": "14.2%",
+    "risk_lift": "1.76x",
+    "rationale": "Moderate credit rating with debt obligation consuming >22% of gross monthly income."
+  },
+  {
+    "id": "RULE_LOW_03",
+    "condition": "EXT_SOURCES_WEIGHTED > 0.52 AND PAYMENT_RATE <= 0.055",
+    "action": "AUTO_APPROVE",
+    "risk_tier": "LOW",
+    "default_rate": "1.8%",
+    "risk_lift": "0.22x",
+    "rationale": "Prime credit bureau rating with sustainable, low-annuity loan repayment terms."
+  }
+]

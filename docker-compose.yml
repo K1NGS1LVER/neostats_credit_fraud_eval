@@ -1,0 +1,42 @@
+services:
+  credit-risk-platform:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: neostats-credit-risk:latest
+    container_name: neostats_credit_risk_app
+    ports:
+      - "8501:8501"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_PRIMARY_MODEL=${GROQ_PRIMARY_MODEL:-qwen/qwen3.8-27b}
+      - GROQ_SECONDARY_MODEL=${GROQ_SECONDARY_MODEL:-groq/compound-mini}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5:1.5b}
+      - MAX_RPM=${MAX_RPM:-30}
+      - MAX_TPM=${MAX_TPM:-60000}
+      - DEBOUNCE_WINDOW_MS=${DEBOUNCE_WINDOW_MS:-400}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
