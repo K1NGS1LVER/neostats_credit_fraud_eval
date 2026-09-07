@@ -137,7 +137,7 @@ class TalkToDataAgent:
         self.rate_limiter = TokenBucketRateLimiter(max_rpm=max_rpm, max_tpm=max_tpm)
         self.debouncer = Debouncer(suppression_ms=debounce_ms)
         self.cache = QueryLRUCache(capacity=cache_capacity)
-        self.router = ModelRouter(groq_api_key=groq_api_key)
+        self.router = ModelRouter(groq_api_key=groq_api_key, auto_verify=False)
 
         if auto_init_db:
             self._ensure_database_initialized()

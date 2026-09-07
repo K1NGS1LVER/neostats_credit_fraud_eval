@@ -1,0 +1,23 @@
+name: Render Free-Tier Container Keep-Alive
+
+on:
+  schedule:
+    # Run every 10 minutes (Render spins down after 15 minutes of inactivity)
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    name: Ping Streamlit Health Endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive HTTP GET
+        run: |
+          echo "Pinging NeoStats Render web service health endpoint..."
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://neostats-credit-risk.onrender.com/_stcore/health")
+          echo "Received HTTP Status Code: $STATUS_CODE"
+          if [ "$STATUS_CODE" -eq 200 ]; then
+            echo "Container is hot and healthy."
+          else
+            echo "Notice: Non-200 status code received ($STATUS_CODE), triggering cold wake-up."
+          fi\n

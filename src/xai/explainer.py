@@ -228,6 +228,21 @@ class CreditRiskExplainer:
 
         return ebm_df, lgb_df
 
+    def predict(
+        self, applicant_data: Union[Dict[str, Any], pd.Series, pd.DataFrame]
+    ) -> Dict[str, float]:
+        """
+        Fast dual model scoring using native vectorized predict_proba routines (~2ms).
+        Returns calibrated default probabilities for both Glassbox EBM and LightGBM.
+        """
+        ebm_df, lgb_df = self._prepare_inputs(applicant_data)
+        ebm_prob = float(self.ebm_model.predict_proba(ebm_df)[:, 1][0])
+        lgb_prob = float(self.lgbm_model.predict_proba(lgb_df)[:, 1][0])
+        return {
+            "ebm_prob": ebm_prob,
+            "lgbm_calibrated_prob": lgb_prob,
+        }
+
     def get_ebm_local_explanation(
         self, applicant_dict: Union[Dict[str, Any], pd.Series, pd.DataFrame]
     ) -> Dict[str, Any]:
