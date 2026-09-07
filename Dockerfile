@@ -58,6 +58,7 @@ EXPOSE 8501
 
 # Production healthcheck
 HEALTHCHECK --interval=20s --timeout=5s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:8501/_stcore/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8501}/_stcore/health || exit 1
 
-ENTRYPOINT ["streamlit", "run", "app.py"]
+# Launch application (binds to $PORT on Render/Cloud if set, otherwise defaults to 8501)
+CMD ["sh", "-c", "streamlit run app.py --server.port=${PORT:-8501} --server.address=0.0.0.0"]
