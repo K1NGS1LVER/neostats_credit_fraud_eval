@@ -332,6 +332,19 @@ def apply_chart_theme(fig: go.Figure, height: int = 300) -> go.Figure:
 @st.cache_data(show_spinner=False)
 def load_portfolio_data() -> pd.DataFrame:
     """Load loan applications dataset with pre-engineered features and fallbacks."""
+    parquet_paths = [
+        Path("data/engineered_loans.parquet"),
+        Path(__file__).parent / "data" / "engineered_loans.parquet",
+    ]
+    for p in parquet_paths:
+        if p.exists():
+            try:
+                df_p = pd.read_parquet(p)
+                if not df_p.empty:
+                    return df_p
+            except Exception as e:
+                logger.warning(f"Error loading {p}: {e}")
+
     data_paths = [
         Path("data/sample_application.csv"),
         Path(__file__).parent / "data" / "sample_application.csv",
@@ -464,8 +477,6 @@ def predict_applicant_risk(
 # 4. Clean Masthead & On-Demand Diagnostics
 # -----------------------------------------------------------------------------
 df_portfolio = load_portfolio_data()
-explainer, explainer_err = get_xai_explainer()
-agent, agent_err = get_talk_to_data_agent()
 
 st.markdown(
     """
@@ -485,17 +496,9 @@ st.markdown(
 # On-Demand System Diagnostics Drawer (Hidden by default to eliminate clutter)
 with st.expander("System Telemetry & Platform Architecture", expanded=False):
     active_llm_tier = "Tier 1: Groq Qwen-3.8" if os.environ.get("GROQ_API_KEY") else "Tier 4: Benchmark Fallback"
-    rpm_headroom = "30 / 30 RPM"
-    tpm_headroom = "60k / 60k TPM"
+    rpm_headroom = "30 / 30 RPM (Nominal)"
+    tpm_headroom = "60k / 60k TPM (Nominal)"
     circuit_breaker = "Healthy (Closed)"
-
-    if agent and hasattr(agent, "rate_limiter"):
-        try:
-            hr = agent.rate_limiter.get_headroom()
-            rpm_headroom = f"{hr['rpm_available']:.0f} / {hr['rpm_limit']} RPM"
-            tpm_headroom = f"{hr['tpm_available']:.0f} / {hr['tpm_limit']} TPM"
-        except Exception:
-            pass
 
     col_s1, col_s2, col_s3, col_s4 = st.columns(4)
     with col_s1:
@@ -774,6 +777,7 @@ with tabs[1]:
     active_applicant["EXT_SOURCES_MEAN"] = (e1_val + val_ext2 + val_ext3) / 3.0
 
     # Predictions
+    explainer, explainer_err = get_xai_explainer()
     active_results = predict_applicant_risk(active_applicant, explainer)
     baseline_results = predict_applicant_risk(applicant_base, explainer)
 
@@ -868,6 +872,7 @@ with tabs[1]:
 # =============================================================================
 with tabs[2]:
     # Extract decision drivers
+    explainer, explainer_err = get_xai_explainer()
     if explainer is not None:
         try:
             ebm_local = explainer.get_ebm_local_explanation(active_applicant)
@@ -1167,8 +1172,12 @@ with st.sidebar:
 
     if st.button("Reset Session History", use_container_width=True):
         st.session_state.chat_history = []
-        if agent and hasattr(agent, "cache"):
-            agent.cache.clear()
+        try:
+            agent_inst, _ = get_talk_to_data_agent()
+            if agent_inst and hasattr(agent_inst, "cache"):
+                agent_inst.cache.clear()
+        except Exception:
+            pass
         st.info("Session reset.")
         st.rerun()
 

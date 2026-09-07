@@ -4,9 +4,17 @@ port = 8501
 enableCORS = false
 enableXsrfProtection = true
 maxUploadSize = 50
+enableWebsocketCompression = true
+runOnSave = false
 
 [browser]
 gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+
+[runner]
+fastReruns = true
 
 [theme]
 base = "dark"
