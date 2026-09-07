@@ -38,6 +38,7 @@ from src.talk_to_data.rate_limiter import (
 from src.talk_to_data.router import ModelRouter
 from src.talk_to_data.validator import (
     SecurityValidationError,
+    check_query_scope,
     validate_sql,
 )
 
@@ -206,6 +207,38 @@ class TalkToDataAgent:
         clean_q = question.strip()
 
         # -------------------------------------------------------------
+        # 0. Domain Scope and Adversarial Guardrail Validation
+        # -------------------------------------------------------------
+        is_in_scope, refusal_reason = check_query_scope(clean_q)
+        if not is_in_scope:
+            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+            scope_message = (
+                "### Domain Scope Notice\n\n"
+                f"**Refusal Reason:** {refusal_reason}\n\n"
+                "The Talk-to-Data conversational assistant is strictly restricted to credit risk analytics, loan portfolio inquiries, and underwriting intelligence.\n\n"
+                "**Permitted In-Scope Topics:**\n"
+                "- Portfolio default rates and risk distributions (`TARGET = 0` vs `1`)\n"
+                "- Applicant demographics: age, education, occupation, income type\n"
+                "- Financial debt ratios: credit amount (`AMT_CREDIT`), income (`AMT_INCOME_TOTAL`), annuity (`AMT_ANNUITY`)\n"
+                "- External bureau ratings (`EXT_SOURCE_1/2/3`) and credit inquiries\n"
+                "- Delinquencies and social circle defaults (`DEF_30`, `DEF_60`)\n\n"
+                "Please rephrase your question to focus on credit risk or loan portfolio analytics."
+            )
+            return AgentResponse(
+                question=clean_q,
+                sql="",
+                data=[],
+                columns=[],
+                row_count=0,
+                summary=scope_message,
+                sql_tier="Domain Guardrail (Blocked)",
+                summary_tier="Domain Guardrail (Refusal)",
+                cache_hit=False,
+                execution_time_ms=elapsed_ms,
+                metadata={"out_of_scope": True, "refusal_reason": refusal_reason},
+            )
+
+        # -------------------------------------------------------------
         # 1. Debounce Check (400ms suppression & execution guard)
         # -------------------------------------------------------------
         try:
@@ -263,6 +296,24 @@ class TalkToDataAgent:
         # 4. Multi-Tier LLM Cascade SQL Generation
         # -------------------------------------------------------------
         raw_sql, sql_tier = self.router.generate_sql(clean_q)
+
+        # Check for model refusal tokens
+        if raw_sql.strip().upper().startswith("REFUSAL:") or "OUT_OF_SCOPE" in raw_sql.upper():
+            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+            refusal_body = raw_sql.replace("REFUSAL:", "").replace("OUT_OF_SCOPE:", "").strip()
+            return AgentResponse(
+                question=clean_q,
+                sql="",
+                data=[],
+                columns=[],
+                row_count=0,
+                summary=f"### Domain Scope Refusal\n\n{refusal_body}\n\nPlease submit an inquiry concerning credit risk, loan defaults, or borrower financials.",
+                sql_tier=sql_tier,
+                summary_tier="LLM Domain Guardrail",
+                cache_hit=False,
+                execution_time_ms=elapsed_ms,
+                metadata={"out_of_scope": True, "refusal_reason": refusal_body},
+            )
 
         # -------------------------------------------------------------
         # 5. AST SQL Security Guardrail Validation (sqlglot)

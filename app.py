@@ -1069,16 +1069,23 @@ with tabs[4]:
                                 st.plotly_chart(apply_chart_theme(fig_chat, height=260), use_container_width=True, config={"displayModeBar": False})
 
                     # 3. Technical Inspection Drawer (On-Demand)
-                    with st.expander("Inspect Query Results Table & Generated SQL", expanded=False):
+                    if resp.sql:
+                        with st.expander("Inspect Query Results Table & Generated SQL", expanded=False):
+                            st.markdown(
+                                f"<span class='badge-emerald'>● AST Security Validated</span> "
+                                f"<span class='badge-blue'>● {resp.sql_tier}</span> "
+                                f"<span class='badge-amber'>● {resp.execution_time_ms:.1f}ms</span>",
+                                unsafe_allow_html=True,
+                            )
+                            st.markdown(f"```sql\n{resp.sql}\n```")
+                            if not df_res.empty:
+                                st.dataframe(df_res, use_container_width=True)
+                    else:
                         st.markdown(
-                            f"<span class='badge-emerald'>● AST Security Validated</span> "
-                            f"<span class='badge-blue'>● {resp.sql_tier}</span> "
-                            f"<span class='badge-amber'>● {resp.execution_time_ms:.1f}ms</span>",
+                            f"<span class='badge-amber'>● {resp.sql_tier}</span> "
+                            f"<span class='badge-blue'>● Latency: {resp.execution_time_ms:.1f}ms</span>",
                             unsafe_allow_html=True,
                         )
-                        st.markdown(f"```sql\n{resp.sql}\n```")
-                        if not df_res.empty:
-                            st.dataframe(df_res, use_container_width=True)
 
     user_prompt = st.chat_input("Ask a credit risk question...")
     query_to_run = selected_query or user_prompt
@@ -1121,16 +1128,23 @@ with tabs[4]:
                                 fig_chat = px.bar(df_res, x=cat_col, y=num_cols[0], color=num_cols[0], color_continuous_scale="Blues")
                                 st.plotly_chart(apply_chart_theme(fig_chat, height=260), use_container_width=True, config={"displayModeBar": False})
 
-                        with st.expander("Inspect Query Results Table & Generated SQL", expanded=False):
+                        if agent_resp.sql:
+                            with st.expander("Inspect Query Results Table & Generated SQL", expanded=False):
+                                st.markdown(
+                                    f"<span class='badge-emerald'>● AST Security Validated</span> "
+                                    f"<span class='badge-blue'>● {agent_resp.sql_tier}</span> "
+                                    f"<span class='badge-amber'>● {agent_resp.execution_time_ms:.1f}ms</span>",
+                                    unsafe_allow_html=True,
+                                )
+                                st.markdown(f"```sql\n{agent_resp.sql}\n```")
+                                if not df_res.empty:
+                                    st.dataframe(df_res, use_container_width=True)
+                        else:
                             st.markdown(
-                                f"<span class='badge-emerald'>● AST Security Validated</span> "
-                                f"<span class='badge-blue'>● {agent_resp.sql_tier}</span> "
-                                f"<span class='badge-amber'>● {agent_resp.execution_time_ms:.1f}ms</span>",
+                                f"<span class='badge-amber'>● {agent_resp.sql_tier}</span> "
+                                f"<span class='badge-blue'>● Latency: {agent_resp.execution_time_ms:.1f}ms</span>",
                                 unsafe_allow_html=True,
                             )
-                            st.markdown(f"```sql\n{agent_resp.sql}\n```")
-                            if not df_res.empty:
-                                st.dataframe(df_res, use_container_width=True)
 
                         st.session_state.chat_history.append({"role": "assistant", "response": agent_resp})
                     except Exception as e:

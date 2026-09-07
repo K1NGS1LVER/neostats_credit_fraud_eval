@@ -54,6 +54,89 @@ BLOCKED_KEYWORDS = (
     r"\bshutdown\b",
 )
 
+# Adversarial prompt injection and instruction override patterns
+ADVERSARIAL_INJECTION_PATTERNS = (
+    r"\b(?:ignore|disregard|forget|override|bypass)\s+(?:all\s+)?(?:previous\s+|prior\s+|safety\s+|system\s+)?(?:instructions?|prompts?|rules?|directives?|guardrails?|filters?)\b",
+    r"\b(?:jailbreak|dan\s+mode|developer\s+mode|unrestricted\s+mode)\b",
+    r"\b(?:reveal|show|print|display|leak|output)\s+(?:the\s+)?(?:system\s+prompt|secret|api\s*key|password|token|confidential\s+data)\b",
+    r"\b(?:confidential|sensitive|secret|proprietary)\s+(?:data|information|records|credentials)\b",
+    r"\b(?:act\s+as|roleplay\s+as)\s+(?!a\s+(?:credit|risk|loan|financial|underwriting)\b)",
+    r"\b(?:you\s+are\s+now|from\s+now\s+on\s+you\s+are)\b",
+)
+
+# Explicit out-of-scope off-topic patterns (creative, chit-chat, trivia, general programming)
+OUT_OF_SCOPE_INTENT_PATTERNS = (
+    r"\b(?:poem|poetry|rhyme|haiku|limerick|ballad|verse)\b",
+    r"\b(?:joke|jokes|riddle|funny\s+story|pun|comedy)\b",
+    r"\b(?:weather|forecast|temperature|rain|climate|humidity)\b",
+    r"\b(?:capital\s+of|president\s+of|prime\s+minister|population\s+of)\b",
+    r"\b(?:recipe|cooking|bake|cake|dinner|pasta|soup|cookie|pizza)\b",
+    r"\b(?:movie|movies|film|actor|actress|song|lyrics|singer|album|band)\b",
+    r"\b(?:write\s+(?:a\s+)?(?:python\s+script|javascript|html|css|c\+\+|bash\s+script))\b",
+    r"\b(?:translate\s+(?:this|the\s+following)?\s+to|french|spanish|german|chinese|japanese)\b",
+    r"\b(?:horoscope|zodiac|astrology)\b",
+    r"\b(?:who\s+won\s+the|world\s+cup|super\s+bowl|olympics)\b",
+    r"\b(?:tell\s+me\s+a\s+story|fairy\s+tale)\b",
+)
+
+# In-scope credit risk domain anchors
+IN_SCOPE_DOMAIN_KEYWORDS = (
+    r"\b(?:credit|loan|loans|debt|borrow|borrower|borrowers|lending|underwrit(?:ing|er)?)\b",
+    r"\b(?:default|defaults|defaulted|defaulting|delinquen(?:t|cy|cies)|past\s+due|dpd)\b",
+    r"\b(?:risk|tier|score|scores|rating|ratings|probability|pd|lgd|ead|expected\s+loss)\b",
+    r"\b(?:applicant|applicants|application|applications|client|clients|customer|customers)\b",
+    r"\b(?:income|salary|earnings|annuity|annuities|goods\s+price|amount|balance)\b",
+    r"\b(?:education|degree|occupation|occupations|job|profession|employed|employment|tenure)\b",
+    r"\b(?:gender|male|female|age|birth|housing|family|status|children|car|realty|real\s+estate)\b",
+    r"\b(?:ext_source|external\s+source|credit\s+bureau|bureau|inquir(?:y|ies))\b",
+    r"\b(?:social\s+circle|def_30|def_60|contract\s+type|cash\s+loan|revolving)\b",
+    r"\b(?:dti|leverage|credit[- ]to[- ]income|payment[- ]rate)\b",
+    r"\b(?:portfolio|distribution|segment|quartile|bracket|approved|approval|rejected|repaid)\b",
+    r"\b(?:loan_applications|sk_id_curr|target|amt_credit|amt_income_total|amt_annuity)\b",
+)
+
+# General aggregate query patterns relevant to the dataset
+GENERAL_PORTFOLIO_PATTERNS = (
+    r"\b(?:how\s+many|total\s+count|count\s+all|number\s+of\s+records|how\s+many\s+records|how\s+many\s+rows|dataset|database|table)\b",
+    r"\b(?:summary\s+statistics|describe\s+data|top\s+\d+|bottom\s+\d+|highest|lowest|average|median|mean|records|samples)\b",
+)
+
+
+def check_query_scope(question: str) -> Tuple[bool, Optional[str]]:
+    """
+    Evaluate whether an incoming user query is strictly within the credit risk,
+    loan underwriting, and portfolio analytics domain.
+
+    Args:
+        question: The user's natural language input.
+
+    Returns:
+        Tuple of (is_in_scope, refusal_reason).
+        If is_in_scope is True, refusal_reason is None.
+    """
+    clean_q = question.strip()
+    if not clean_q:
+        return False, "Query is empty."
+
+    # 1. Adversarial prompt injection or instruction override scan
+    for pattern in ADVERSARIAL_INJECTION_PATTERNS:
+        if re.search(pattern, clean_q, re.IGNORECASE):
+            return False, "Adversarial instruction or prompt override attempt detected."
+
+    # 2. Explicit out-of-scope off-topic intent scan
+    for pattern in OUT_OF_SCOPE_INTENT_PATTERNS:
+        if re.search(pattern, clean_q, re.IGNORECASE):
+            return False, "Inquiry is outside the credit risk, loan underwriting, and portfolio analytics domain."
+
+    # 3. Domain anchor and aggregate query relevance check
+    has_domain_anchor = any(re.search(p, clean_q, re.IGNORECASE) for p in IN_SCOPE_DOMAIN_KEYWORDS)
+    has_portfolio_pattern = any(re.search(p, clean_q, re.IGNORECASE) for p in GENERAL_PORTFOLIO_PATTERNS)
+
+    if not (has_domain_anchor or has_portfolio_pattern):
+        return False, "Query lacks credit risk, borrower, or loan portfolio context."
+
+    return True, None
+
 
 def extract_sql_from_markdown(raw_query: str) -> str:
     """
