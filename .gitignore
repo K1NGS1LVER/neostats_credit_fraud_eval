@@ -1,10 +1,21 @@
-# Python
+# =============================================================================
+# NeoStats Credit Risk Intelligence Platform - Production .gitignore
+# =============================================================================
+
+# 1. Environment Variables & Secret Credentials (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.cert
+
+# 2. Python Artifacts & Bytecode Caches
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -17,29 +28,72 @@ parts/
 sdist/
 var/
 wheels/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Virtual Environments
+# 3. Virtual Environments
 .venv/
 venv/
 ENV/
+env/
+.virtualenv/
 
-# Jupyter
-.ipynb_checkpoints
+# 4. Jupyter & IPython
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+.ipython/
 
-# Environment Variables
-.env
-
-# Testing & Coverage
+# 5. Testing, Coverage & Typecheckers
 .pytest_cache/
 .coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
 htmlcov/
+.mypy_cache/
+.pytype/
+.ruff_cache/
 
-# macOS
+# 6. Streamlit Cache & Runtime Secrets
+.streamlit/secrets.toml
+
+# 7. Operating System & Editor Metadata
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*~
 
-# Temporary data files (keep sample_application.csv and credit_risk.duckdb)
+# 8. Temporary Data, Database Locks & Write-Ahead Logs
+*.duckdb.wal
+*.duckdb.tmp
 data/temp.parquet
 data/engineered_loans.parquet
+
+# 9. Log Files
+*.log
+logs/
+
+# 10. Explicit Keep Rules (Core evaluation artifacts required for zero-setup execution)
+!data/sample_application.csv
+!data/credit_risk.duckdb
+!artifacts/*.joblib
+!artifacts/*.parquet
+!artifacts/*.json
+!.streamlit/config.toml

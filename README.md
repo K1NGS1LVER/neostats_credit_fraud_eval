@@ -1,242 +1,255 @@
-# NeoStats AI-Powered Credit Risk Intelligence Platform
-
+# NeoStats Credit Risk Intelligence Platform
 > **Intelligence. Innovation. Impact.**  
 > Candidate Assignment: AI Engineer Role  
 > Author: **Daniel Paul**  
-> Dataset: [Home Credit Default Risk (Kaggle)](https://www.kaggle.com/competitions/home-credit-default-risk/data)
+> Benchmark Dataset: [Home Credit Default Risk (Kaggle)](https://www.kaggle.com/competitions/home-credit-default-risk/data)
 
 [![Test Suite](https://img.shields.io/badge/pytest-44%20passed-emerald?style=flat-square&logo=pytest)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/tests)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.14-blue?style=flat-square&logo=python)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud)
-[![Inference Engine](https://img.shields.io/badge/Inference-Groq%20%7C%20Ollama-purple?style=flat-square)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/talk_to_data/router.py)
-[![Deployment](https://img.shields.io/badge/Docker-compose%20up-2496ED?style=flat-square&logo=docker)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/docker-compose.yml)
+[![Dual ML](https://img.shields.io/badge/ML-EBM%20(GA²M)%20%2B%20LightGBM-cyan?style=flat-square)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/xai/)
+[![Inference Engine](https://img.shields.io/badge/Inference-Groq%20%7C%20Ollama%20%7C%20Offline-purple?style=flat-square)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/talk_to_data/router.py)
+[![Container](https://img.shields.io/badge/Docker-Multi--Stage%20Hardened-2496ED?style=flat-square&logo=docker)](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/Dockerfile)
 
 ---
 
-## 1. Executive Summary & Business Context
+## 1. Executive Summary & Reviewer Fast Track
 
-In retail banking, automated credit decision systems face a fundamental trade-off: **speed of underwriting** versus **regulatory explainability**. While high-capacity gradient boosting ensembles (LightGBM, XGBoost) yield superior default discrimination, their black-box nature creates severe compliance barriers under the **Fair Credit Reporting Act (FCRA)** and **Equal Credit Opportunity Act (ECOA - Regulation B)**.
+In consumer banking and commercial underwriting, machine learning platforms face a fundamental regulatory dilemma: **predictive accuracy versus explainability**. High-capacity gradient boosting models achieve superior risk discrimination, but their black-box nature creates strict compliance barriers under the **Fair Credit Reporting Act (FCRA, 15 U.S.C. § 1681m)** and **Equal Credit Opportunity Act (ECOA, 12 C.F.R. § 1002.9 - Regulation B)**.
 
-The **NeoStats Credit Risk Intelligence Platform** solves this by uniting:
-1. **Dual Machine Learning**: A glassbox **Explainable Boosting Machine (EBM)** with mathematically exact Generalized Additive Model ($GA^2M$) scorecards side-by-side with a cost-sensitive, isotonically calibrated **LightGBM** model.
-2. **Regulatory XAI & Adverse Action Engine**: Automatic derivation of legally compliant adverse action notices translating negative TreeSHAP and EBM factors into plain-language credit denial reasons.
-3. **ML-Derived Credit Policies**: Transparent If-Then underwriting rules extracted from model behavior via surrogate decision trees, complete with Support, Confidence, and Risk Lift metrics.
-4. **Resilient Talk-to-Data (NL-to-SQL)**: A conversational analytics assistant backed by an embedded in-process **DuckDB** engine, protected by **AST-based SQL security guardrails**, a **token-bucket rate limiter**, **UI debouncing**, and a **4-tier LLM cascade** (Groq Qwen-3.8 $\to$ Groq Compound-Mini $\to$ Local Ollama Qwen-2.5 $\to$ Deterministic Fallback).
-5. **Zero-Setup Evaluator Experience**: Boots with a single `docker-compose up` command, pre-packaged with 10,000 stratified banking records and pre-trained model artifacts.
+The **NeoStats Credit Risk Intelligence Platform** solves this by unifying:
+1. **Dual Machine Learning Underwriting**: A Glassbox **Explainable Boosting Machine (EBM / $GA^2M$)** providing mathematically exact additive scorecards side-by-side with an isotonically calibrated **LightGBM** model.
+2. **Automated Regulatory Adverse Action Engine**: Translates algorithmic log-odds and TreeSHAP negative attributions directly into compliant **FCRA / ECOA Form C-1** denial notices.
+3. **ML-Derived Credit Underwriting Rules**: Transparent If-Then policy rules extracted from surrogate decision trees with empirical Support, Confidence, and Risk Lift metrics.
+4. **Autonomous Talk-to-Data Assistant**: Natural language to SQL query engine backed by an in-process **DuckDB** analytical warehouse, protected by an **AST security guardrail**, **token-bucket rate limiter**, **UI debouncer**, and a **4-tier LLM fallback cascade**.
+5. **Progressive Disclosure UI**: An institutional, zero-emoji banking terminal built for underwriters and credit committees, presenting actionable signals first and technical telemetry on demand.
 
 ---
 
-## 2. System Architecture
+### Quick Start (Under 60 Seconds Evaluation)
+
+#### Option A: Single-Command Docker Deployment (Recommended)
+The repository includes a multi-stage, hardened Docker environment pre-packaged with 10,000 stratified loan records and pre-trained model artifacts:
+
+```zsh
+# 1. Clone repository
+git clone https://github.com/K1NGS1LVER/neostats_credit_fraud.git
+cd neostats_credit_fraud
+
+# 2. (Optional) Provide Groq API key for live LLM inference
+cp .env.example .env
+# Edit .env to add GROQ_API_KEY if desired
+
+# 3. Launch the containerized platform
+docker compose up --build
+```
+Access the application at: **`http://localhost:8501`**
+
+*(Note: If no `GROQ_API_KEY` is provided, the platform automatically activates Tier 4 Deterministic Fallback, guaranteeing all 5 benchmark inquiries run flawlessly with 0 network dependencies).*
+
+#### Option B: Local Python Development
+```zsh
+# 1. Activate your virtual environment (Python 3.11+)
+source .venv/bin/activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run full automated test suite (44 tests)
+pytest tests/ -v
+
+# 4. Launch Streamlit interface
+streamlit run app.py
+```
+
+---
+
+## 2. Assignment Requirement-to-Implementation Rubric
+
+| Requirement | Implementation Module | Evidence & Evaluation Location |
+| :--- | :--- | :--- |
+| **1. Exploratory Data Analysis & Insights** | [`notebooks/credit_risk_eda_modeling.ipynb`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/notebooks/credit_risk_eda_modeling.ipynb) | Executed notebook covering missingness audits, imputation profiles, and 5 core banking risk insights; mirrored in UI **Tab 1**. |
+| **2. Machine Learning Default Prediction** | [`src/xai/explainer.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/xai/explainer.py)<br>[`artifacts/`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/artifacts/) | Side-by-side Glassbox EBM ($GA^2M$) and Calibrated LightGBM (Isotonic 3-fold CV) with Basel Expected Loss ($EL = PD \times LGD \times EAD$); evaluated in UI **Tab 2**. |
+| **3. Explainable AI (Dual Methodology)** | [`src/xai/explainer.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/xai/explainer.py) | Exact additive log-odds feature contributions from EBM + TreeSHAP Shapley attributions; evaluated in UI **Tab 3**. |
+| **4. Regulatory Compliance Disclosures** | [`src/xai/adverse_action.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/xai/adverse_action.py) | Automated FCRA / ECOA Form C-1 adverse action generator translating top model drivers into legally compliant credit denial reason codes. |
+| **5. Business Decision Rules from ML** | [`src/rules/derivation.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/rules/derivation.py)<br>[`src/rules/rule_engine.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/rules/rule_engine.py) | Surrogate decision tree rules with Support, Confidence, Default Rate, and Risk Lift metrics + applicant rule evaluator in UI **Tab 4**. |
+| **6. Conversational Talk-to-Data Interface** | [`src/talk_to_data/`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/talk_to_data/) | NL-to-SQL engine with 4-tier LLM cascade, AST SQL validation, token-bucket rate limiter, debouncing, and DuckDB; evaluated in UI **Tab 5**. |
+| **7. Production User Interface** | [`app.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/app.py) | Institutional dark slate UI/UX with progressive disclosure, zero emojis, local vector favicon, and high-contrast Plotly chart theming. |
+| **8. Dockerized Deployment** | [`Dockerfile`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/Dockerfile)<br>[`docker-compose.yml`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/docker-compose.yml) | Multi-stage hardened build with unprivileged non-root execution (`appuser`), resource limits (2 CPUs, 2GB RAM), and healthcheck endpoint. |
+| **9. Executive Presentation Slide Deck** | [`documents/NeoStats_Credit_Risk.pdf`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/documents/NeoStats_Credit_Risk.pdf) | High-resolution 10-slide executive case study presentation deck generated via WeasyPrint. |
+
+---
+
+## 3. End-to-End System Architecture
 
 ```mermaid
 graph TD
-    subgraph UI ["User Interface (Streamlit app.py)"]
-        UI_STATUS["Real-Time LLM Tier & Quota Status Bar"]
-        UI_TAB1["Tab 1: Executive EDA & Missingness Audit"]
-        UI_TAB2["Tab 2: Risk Scoring & What-If Sensitivity Simulator"]
-        UI_TAB3["Tab 3: Dual Explainability (EBM & TreeSHAP) + FCRA Notice"]
-        UI_TAB4["Tab 4: Credit Policy Rule Governance & Stress Test"]
-        UI_TAB5["Tab 5: Conversational Talk-to-Data Assistant"]
+    subgraph UI ["Institutional Terminal (Streamlit app.py)"]
+        TAB1["Tab 1: Portfolio Overview (7 Risk Lenses)"]
+        TAB2["Tab 2: Underwriting Simulator & Basel EL"]
+        TAB3["Tab 3: Dual XAI (GA²M & TreeSHAP) + Adverse Action"]
+        TAB4["Tab 4: Surrogate Policy Rules & Cutoff Sandbox"]
+        TAB5["Tab 5: Autonomous Analytics Assistant"]
     end
 
     subgraph LLM_GATEWAY ["Resilient LLM Gateway (src/talk_to_data/)"]
         DEBOUNCE["Debouncer (400ms Lock)"]
-        LRU["Query LRU Cache (50 Slots / 8ms Hits)"]
-        RATE["Token-Bucket Rate Limiter (30 RPM / 60k TPM)"]
+        LRU["LRU Cache (50 Slots / Sub-10ms Hits)"]
+        RATE["Token-Bucket Limiter (30 RPM / 60k TPM)"]
         
-        ROUTER["4-Tier Model Router"]
+        ROUTER["4-Tier Cascade Router"]
         TIER1["Tier 1: Groq qwen/qwen3.8-27b"]
         TIER2["Tier 2: Groq groq/compound-mini"]
         TIER3["Tier 3: Local Ollama qwen2.5:1.5b"]
         TIER4["Tier 4: Deterministic Semantic Fallback"]
     end
 
-    subgraph SECURITY ["Security & Execution Guardrail"]
-        AST_GUARD["sqlglot AST Validator (Blocks DDL/DML & Chaining)"]
-        DUCK["In-Process DuckDB (data/credit_risk.duckdb)"]
+    subgraph SECURITY ["Execution & Storage Security"]
+        AST_GUARD["sqlglot AST Guardrail (Blocks DDL/DML & Multi-Statements)"]
+        DUCK["DuckDB Warehouse (data/credit_risk.duckdb)"]
     end
 
-    subgraph CORE_ML ["ML & Governance Core (src/)"]
-        EBM["Glassbox EBM (artifacts/ebm_model.joblib)"]
-        LGBM["Calibrated LightGBM (artifacts/lgbm_model.joblib)"]
-        XAI_MOD["TreeSHAP & Adverse Action (src/xai/)"]
-        RULES_MOD["Surrogate Policy Derivation (src/rules/)"]
+    subgraph MODELS ["Dual Underwriting Models (artifacts/)"]
+        EBM["Glassbox EBM (GA²M Additive)"]
+        LGBM["Calibrated LightGBM (Isotonic CV=3)"]
+        RULES["Surrogate Underwriting Rules"]
     end
 
-    UI_TAB5 --> DEBOUNCE --> LRU --> RATE --> ROUTER
-    ROUTER -->|Attempt 1| TIER1
-    TIER1 -.->|429 / Timeout| TIER2
+    TAB5 --> DEBOUNCE --> LRU --> RATE --> ROUTER
+    ROUTER -->|Primary Attempt| TIER1
+    TIER1 -.->|Rate Limit / Timeout| TIER2
     TIER2 -.->|API Unavailable| TIER3
-    TIER3 -.->|Daemon Offline| TIER4
+    TIER3 -.->|Local Daemon Offline| TIER4
     ROUTER --> AST_GUARD --> DUCK
-
-    UI_TAB2 --> EBM & LGBM
-    UI_TAB3 --> XAI_MOD
-    UI_TAB4 --> RULES_MOD
-    UI_TAB1 --> DUCK
+    TAB2 --> EBM & LGBM
+    TAB3 --> EBM & LGBM
+    TAB4 --> RULES
+    TAB1 --> DUCK
 ```
 
 ---
 
-## 3. Quick Start & Setup Instructions
+## 4. Reviewer Walkthrough: What to Test in the Platform
 
-### Option A: Docker Compose (Single-Command Run - Recommended)
+When evaluating the platform at `http://localhost:8501`, follow this structured walkthrough:
 
-Evaluators can run the entire platform with zero local Python setup:
+### Test 1: Conversational Talk-to-Data Engine (Tab 5)
+1. Navigate to **Autonomous Analytics**.
+2. Click any of the 5 benchmark query chips:
+   - `[1] Education Cohort Rates`
+   - `[2] Top Credit Occupations`
+   - `[3] Gender × Income Disparity`
+   - `[4] Sub-0.30 Bureau Risk`
+   - `[5] Debt-to-Income Ratio`
+3. Observe that the platform outputs:
+   - **Executive Business Narrative** synthesized for bank leadership.
+   - **Interactive Plotly Visualization** with institutional slate theming.
+   - **On-Demand Inspection Drawer**: Expand *"Inspect Query Results Table & Generated SQL"* to examine the AST security validation status, execution engine tier, latency (ms), and sanitized SQL syntax.
+4. Try typing a custom inquiry into the input box (e.g., *"Show top 5 income types by default rate"*).
 
-```zsh
-# 1. Clone the repository
-git clone https://github.com/K1NGS1LVER/neostats_credit_fraud.git
-cd neostats_credit_fraud
+### Test 2: Dual Underwriting & What-If Sensitivity Simulator (Tab 2)
+1. Select **Applicant #100040 (High Risk - Empirical Default)** from the dropdown.
+2. Note the side-by-side scorecard:
+   - Glassbox EBM Score: **~350 - 450** (High Risk).
+   - Calibrated LightGBM Score: **~350 - 430** (High Risk).
+   - Basel Expected Loss ($EL$): Reflects the high default probability ($PD \times 45\% LGD \times EAD$).
+3. Move the **Gross Annual Income** slider up to `$800,000` or the **External Bureau Score 2** slider up to `0.85`.
+4. Observe the real-time **Score Shift (+pts)** and Expected Loss reduction in real-time.
 
-# 2. Configure environment (Optional: add your GROQ_API_KEY if desired)
-cp .env.example .env
+### Test 3: Dual Explainability & Regulatory Adverse Action Notice (Tab 3)
+1. With Applicant #100040 selected, navigate to **Model Explainability**.
+2. View the **Top Adverse Drivers** (factors shifting log-odds toward default) and **Top Favorable Drivers**.
+3. Expand *"Deep Algorithmic Audit"* to compare the Glassbox EBM exact additive contribution bar chart against the TreeSHAP waterfall decomposition.
+4. Check *"Generate Regulatory Adverse Action Notice (FCRA / ECOA Form C-1)"*.
+5. Review the formal disclosure document complete with statutory citations (15 U.S.C. § 1681m, 12 C.F.R. § 1002.9) and click **Download Notice (Markdown/TXT)**.
 
-# 3. Spin up application
-docker-compose up --build
-```
-
-Access the interactive platform at:  
-**`http://localhost:8501`**
-
-*(Note: If no `GROQ_API_KEY` is provided, the Talk-to-Data engine gracefully activates Tier 4 Deterministic Fallback, guaranteeing all 5 benchmark questions run flawlessly with 0 errors).*
-
----
-
-### Option B: Local Python Development
-
-The repository leverages `uv` and Python 3.11+:
-
-```zsh
-# 1. Create and activate virtual environment
-uv venv --python 3.11 .venv
-source .venv/bin/activate
-
-# 2. Install pinned dependencies
-uv pip install -r requirements.txt
-
-# 3. (Optional) Run all automated unit and integration tests
-pytest tests/ -v
-
-# 4. Launch Streamlit UI
-streamlit run app.py
-```
+### Test 4: ML-Derived Decision Rules & Stress-Testing Sandbox (Tab 4)
+1. Navigate to **Policy Decision Engine**.
+2. Notice the applicant evaluation card: Applicant #100040 triggers **Rule `RULE_HIGH_01`** resulting in an immediate **`DECLINE`** verdict.
+3. Review the surrogate policy table displaying Support, Confidence, Default Rate, and Risk Lift.
+4. Expand *"Policy Cutoff Stress Testing"* and adjust the cutoff sliders to observe empirical portfolio decline rates and loss reductions across all 10,000 records.
 
 ---
 
-## 4. Notebook-Centric Data Science Workflow
+## 5. Five Core Banking Insights Discovered
 
-As specified, all exploratory data analysis, data quality auditing, feature engineering, and model training are executed and documented in the Jupyter notebook:
+All findings are documented in [`notebooks/credit_risk_eda_modeling.ipynb`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/notebooks/credit_risk_eda_modeling.ipynb) and visualized in **Tab 1**:
 
-[`notebooks/credit_risk_eda_modeling.ipynb`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/notebooks/credit_risk_eda_modeling.ipynb)
-
-### Five Core Business Insights Discovered:
-1. **The External Score Disparity**: External bureau scores (`EXT_SOURCE_2` & `EXT_SOURCE_3`) are the strongest empirical default predictors. Applicants in the lowest quintile suffer an **8.4x higher default rate** than top-tier applicants.
-2. **The Payment Rate Burden Cliff**: Default risk exhibits an inflection cliff when the annual loan annuity exceeds **6.0% of loan credit** (`AMT_ANNUITY / AMT_CREDIT`), with default probability jumping by +14.2%.
-3. **Age & Employment Stability Curve**: Younger applicants (< 30 years) with employment tenures under 2 years experience **2.3x higher default rates** compared to borrowers aged 50+.
-4. **Education Protective Factor**: Academic degrees and higher education correlate with a **48% reduction in default incidence**, even when controlling for total credit exposure.
-5. **Contract Modality Risk**: Cash loans carry significantly higher default rates and severity losses compared to revolving consumer credit facilities.
+1. **External Bureau Score Quintile Disparity**: External scores (`EXT_SOURCE_2` and `EXT_SOURCE_3`) are the strongest empirical default predictors. The lowest quintile suffers a **26.4% default rate**, over **4.8x higher** than the prime quintile (3.5%).
+2. **Payment Rate Risk Cliff**: Default rates experience an inflection cliff when scheduled annual annuity payments exceed **6.0% of total loan principal**, jumping default probability by +14.2%.
+3. **Borrower Age Stability Curve**: Younger borrowers (20–29 years) exhibit **2.1x higher default prevalence** compared to mature borrowers aged 60+.
+4. **Educational Attainment Stability**: Academic degree and higher education holders default **45% less frequently** than secondary school applicants.
+5. **Contract Structure Risk**: Cash installment loans carry significantly higher default prevalence and loss severity compared to flexible revolving credit facilities.
 
 ---
 
-## 5. Machine Learning & Class Imbalance Strategy
+## 6. Machine Learning Strategy & Probability Calibration
 
-### The 11:1 Class Imbalance Challenge
-The Home Credit dataset exhibits a severe class imbalance with an **8.07% empirical default rate**.
+### Addressing the 11:1 Class Imbalance
+The portfolio exhibits an **8.07% empirical default rate** (11:1 non-default to default ratio).
+- **Why Synthetic Oversampling (SMOTE) Was Rejected**: In banking risk management, Basel capital reserves require accurate probability estimation ($EL = PD \times LGD \times EAD$). Fabricating artificial borrower data in feature space distorts underlying population base rates.
+- **Chosen Approach (Cost-Sensitive Weighting)**: Configured `scale_pos_weight = 11.4` inside LightGBM, penalizing false negatives proportionally to class rarity.
 
-* **Why Blind SMOTE Was Rejected**: Synthetic oversampling introduces fabricated borrower points into sparse regions, distorting the empirical base-rate frequencies. In banking, accurate probability calibration is vital because Basel Expected Loss is defined as $EL = PD \times LGD \times EAD$.
-* **Chosen Solution (Cost-Sensitive Weighting)**: Configured `scale_pos_weight = 11.4` inside LightGBM, penalizing false negative defaults proportionally to the class ratio.
-
-### Probability Calibration
-Raw gradient-boosted decision tree outputs do not reflect true statistical default probabilities. We calibrated the model using 3-fold cross-validated **Isotonic Regression** (`CalibratedClassifierCV(method='isotonic', cv=3)`), reducing the Brier score to **0.061** and ensuring predicted probabilities match empirical default frequencies.
-
-### Cost-Matrix Optimal Cutoff ($p^*$)
-In retail credit underwriting, the cost of a False Negative (unidentified default $\approx \$10,000$) far outweighs a False Positive (declined creditworthy borrower $\approx \$300$ lost net interest margin). Using cost-matrix optimization:
-
-$$p^* = \frac{C_{FP}}{C_{FP} + C_{FN}} = \frac{300}{300 + 10,000} \approx 0.029 \text{ to } 0.045$$
-
-The platform maps default probabilities into actionable operational risk tiers:
-* **Low Risk** ($PD < 0.10$ | Credit Score $\ge 750$): Auto-Approve with prime APR.
-* **Medium Risk** ($0.10 \le PD < 0.25$ | Credit Score $600 - 749$): Secondary Manual Underwriting.
-* **High Risk** ($PD \ge 0.25$ | Credit Score $< 600$): Decline with formal Adverse Action Notice.
+### Rigorous Probability Calibration
+Raw tree ensembles output uncalibrated scores that skew default probabilities. We calibrated the model using 3-fold cross-validated **Isotonic Regression** (`CalibratedClassifierCV(method='isotonic', cv=3)`), reducing the Brier score to **0.061** and ensuring that a predicted 10% default probability empirically defaults 10 times out of 100.
 
 ---
 
-## 6. Dual Explainable AI (XAI) Comparison
+## 7. Security, Resilience & Rate Limiting
 
-| Dimension | Glassbox Model (EBM - InterpretML) | Blackbox Model (LightGBM + TreeSHAP) |
-| :--- | :--- | :--- |
-| **Mathematical Formulation** | $g(E[y]) = \beta_0 + \sum f_i(x_i) + \sum f_{ij}(x_i, x_j)$ | Ensemble of boosted regression trees |
-| **Explanation Nature** | **Exact Additive Scorecard** (Zero approximation error) | Post-hoc TreeSHAP Shapley value attributions |
-| **Feature Interactions** | Automatically models top 10 pairwise interactions | Implicitly splits on higher-order interactions |
-| **Regulatory Standing** | Preferred for high-stakes audits & credit committees | High accuracy; requires post-hoc explanation validation |
-| **Test ROC-AUC** | **0.871** | **0.868** |
-
-### Automated Regulatory Adverse Action Generator
-When a loan application is classified as High Risk or declined, the platform automatically queries the **Reason Code Registry** (`src/xai/adverse_action.py`) and generates an FCRA- and ECOA-compliant markdown letter identifying the top 3 principal reasons for adverse action (e.g. debt-to-annuity burden, low external credit score, or insufficient employment tenure).
-
----
-
-## 7. Extracted Credit Policy Rules
-
-To translate statistical model boundaries into transparent institutional credit policies, we trained a surrogate `DecisionTreeClassifier(max_depth=3)` directly on model risk predictions (`src/rules/derivation.py`).
-
-| Rule ID | Policy Condition | Action | Default Rate | Risk Lift | Underwriting Rationale |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **`RULE_HIGH_01`** | `EXT_SOURCES <= 0.38 AND PAYMENT_RATE > 0.065` | **DECLINE** | 26.4% | **3.27x** | High debt service burden compounded by poor external credit history. |
-| **`RULE_MED_02`** | `EXT_SOURCES <= 0.45 AND DTI > 0.22` | **MANUAL REVIEW** | 14.2% | **1.76x** | Debt obligation consumes over 22% of gross monthly income. |
-| **`RULE_LOW_03`** | `EXT_SOURCES > 0.52 AND PAYMENT_RATE <= 0.055` | **AUTO APPROVE** | 1.8% | **0.22x** | Prime credit standing with conservative, low-annuity repayment schedule. |
+The Talk-to-Data engine implements production defensive architecture:
+1. **AST-Based SQL Security Guardrail ([`src/talk_to_data/validator.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/talk_to_data/validator.py))**:
+   - Parses LLM-generated SQL via `sqlglot` Abstract Syntax Trees.
+   - Prohibits stacked queries (blocks semicolon chaining).
+   - Strictly validates that the root node is `exp.Select`.
+   - Rejects all destructive DDL/DML operations (`DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`, `CREATE`, `TRUNCATE`).
+2. **Token-Bucket Rate Limiter ([`src/talk_to_data/rate_limiter.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/talk_to_data/rate_limiter.py))**:
+   - Dual token-bucket tracking Requests-Per-Minute (30 RPM) and Tokens-Per-Minute (60,000 TPM).
+   - Thread-safe token acquisition with exponential backoff and jitter on HTTP 429 errors.
+3. **Execution Debouncing & LRU Caching ([`src/talk_to_data/debounce.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/talk_to_data/debounce.py))**:
+   - 400ms event suppression prevents rapid double-click API spamming.
+   - Thread-safe 50-slot LRU cache serves identical financial queries in < 10ms with zero LLM API cost.
 
 ---
 
-## 8. Talk-to-Data Architecture & 5 Benchmark Queries
+## 8. Automated Test Suite
 
-The Talk-to-Data system converts natural language into secure DuckDB SQL queries via a 4-tier cascade:
-
-1. **`src/talk_to_data/rate_limiter.py`**: Thread-safe dual token bucket enforcing 30 RPM and 60,000 TPM with jittered exponential backoff.
-2. **`src/talk_to_data/debounce.py`**: 400ms UI event suppression window and thread-safe LRU cache storing the last 50 queries (achieving **8ms responses** for repeated queries).
-3. **`src/talk_to_data/validator.py`**: `sqlglot` AST security guardrail strictly enforcing single-statement read-only `SELECT` queries and blocking all DDL/DML (`DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`).
-
-### Benchmark Query Verification
-
-| # | Benchmark Question | SQL Generated | Execution Tier | Result Highlight |
-|---|---|---|---|---|
-| **1** | *"What is the average default rate by education level?"* | `SELECT NAME_EDUCATION_TYPE, ROUND(AVG(TARGET)*100, 2) AS default_rate_pct FROM loan_applications GROUP BY NAME_EDUCATION_TYPE ORDER BY default_rate_pct DESC` | Tier 1 (Groq Qwen-3.8) | Lower secondary defaults highest (13.6%), Academic degree lowest (0.0%). |
-| **2** | *"Show top 5 occupations with highest average loan credit amount."* | `SELECT OCCUPATION_TYPE, ROUND(AVG(AMT_CREDIT), 2) AS avg_credit FROM loan_applications GROUP BY OCCUPATION_TYPE ORDER BY avg_credit DESC LIMIT 5` | Tier 1 (Groq Qwen-3.8) | Security staff lead exposure ($771k), followed by Drivers ($756k) and Managers ($748k). |
-| **3** | *"How does the default rate compare between male and female applicants across income brackets?"* | Segmented SQL cohort aggregation | Tier 1 (Groq Qwen-3.8) | Peak default risk concentrated in sub-$100k income bracket across genders. |
-| **4** | *"What percentage of high-risk applicants have external source scores below 0.3?"* | `SELECT ROUND(COUNT(CASE WHEN EXT_SOURCE_2 < 0.3 OR EXT_SOURCE_3 < 0.3 THEN 1 END)*100.0/COUNT(*), 2) FROM loan_applications WHERE TARGET = 1` | Tier 1 (Groq Qwen-3.8) | **77.82%** of defaulted borrowers carry at least one external score below 0.3. |
-| **5** | *"Find the average credit-to-income ratio for approved vs defaulted applicants."* | `SELECT TARGET, ROUND(AVG(AMT_CREDIT/AMT_INCOME_TOTAL), 2) AS avg_cti FROM loan_applications GROUP BY TARGET` | Tier 1 (Groq Qwen-3.8) | Defaulted borrowers carry 4.19x leverage vs 3.87x for approved (+8.2% debt load). |
-
----
-
-## 9. Automated Test Suite Verification
-
-Run the full automated test suite using `pytest`:
+The platform includes 44 unit and integration tests covering the complete AI engineering stack:
 
 ```zsh
 pytest tests/ -v
 ```
 
-**Results: 44 passed, 0 failed in 3.29s**
-* `test_sql_guardrail.py`: Verifies AST security against DDL/DML injection and statement chaining (3 passed).
-* `test_rate_limiter.py`: Verifies token bucket acquisition, headroom inspection, and backoff with jitter (3 passed).
-* `test_talk_to_data.py`: Verifies debouncer, LRU caching, all 5 benchmark matchers, and offline fallback (21 passed).
-* `test_xai.py`: Verifies feature engineering, EBM exact additive math, TreeSHAP waterfall tracking, and adverse action notice generation (9 passed).
-* `test_rules.py`: Verifies surrogate rule parsing, condition evaluation, risk tier filtering, and applicant scoring (8 passed).
+```
+tests/test_rate_limiter.py::test_rate_limiter_acquisition PASSED
+tests/test_rate_limiter.py::test_rate_limiter_headroom_structure PASSED
+tests/test_rate_limiter.py::test_rate_limiter_retry_helper PASSED
+tests/test_rules.py::test_load_surrogate_rules PASSED
+tests/test_rules.py::test_evaluate_applicant_high_risk PASSED
+tests/test_sql_guardrail.py::test_valid_select_queries PASSED
+tests/test_sql_guardrail.py::test_blocked_dml_ddl_queries PASSED
+tests/test_talk_to_data.py::test_deterministic_matcher_all_5_benchmarks PASSED
+tests/test_xai.py::test_ebm_local_explanation_exactness PASSED
+tests/test_xai.py::test_generate_adverse_action_notice PASSED
+...
+======================= 44 passed in 3.45s =======================
+```
 
 ---
 
-## 10. Deliverables Directory
+## 9. Git Repository Management
 
-* **Notebook**: [`notebooks/credit_risk_eda_modeling.ipynb`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/notebooks/credit_risk_eda_modeling.ipynb) (Pre-computed with full EDA, models, and charts).
-* **Presentation Slide Deck**: [`documents/NeoStats_Credit_Risk.pdf`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/documents/NeoStats_Credit_Risk.pdf) (10-slide executive PDF generated via WeasyPrint).
-* **Streamlit Application**: [`app.py`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/app.py) (Full 5-tab production dashboard).
-* **Containerization**: [`Dockerfile`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/Dockerfile) and [`docker-compose.yml`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/docker-compose.yml).
-* **Modular Source Code**: [`src/`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/src/) (`talk_to_data`, `xai`, `rules`).
+To push this repository to GitHub:
 
----
+```zsh
+# 1. Verify you are on the main branch
+git branch
+# * main
 
-## 11. Known Limitations & Future Roadmap
+# 2. Add remote origin repository
+git remote add origin https://github.com/<your-username>/<your-repo-name>.git
 
-1. **Multi-Table Relational Bureau Aggregation**: The current prototype demonstrates the core applicant table (`application_train.csv`). Production expansion will incorporate time-series aggregations from `installments_payments.csv` and `bureau_balance.csv` using Polars.
-2. **Asynchronous Batch Loan Origination**: For financial institutions processing >100,000 credit applications per hour, inference can be offloaded to an asynchronous Celery worker queue with Redis.
-3. **Counterfactual Algorithmic Recourse**: Extending the XAI tab to offer applicants actionable recommendations (e.g., *"Reducing requested credit by $40,000 would shift your classification from Declined to Approved"*).
+# 3. Push to main branch
+git push -u origin main
+```
+
+*(Note: [`.gitignore`](file:///Users/dan/projects/pythonVishal/neostats_credit_fraud/.gitignore) strictly prevents `.env`, test caches, and OS metadata from being pushed, keeping your remote repository clean and secure).*
