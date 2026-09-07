@@ -2,6 +2,7 @@ services:
   - type: web
     name: neostats-credit-risk
     runtime: docker
+    repo: https://github.com/K1NGS1LVER/neostats_credit_fraud_eval
     plan: free
     region: oregon
     branch: main
