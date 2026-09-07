@@ -25,6 +25,13 @@ import streamlit as st
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("neostats_app")
 
+# Synchronize Streamlit Cloud secrets to environment variables if present
+try:
+    if hasattr(st, "secrets") and "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = str(st.secrets["GROQ_API_KEY"])
+except Exception:
+    pass
+
 # Page Configuration with local institutional favicon
 FAVICON_PATH = Path(__file__).parent / "assets" / "favicon.png"
 page_icon_val = str(FAVICON_PATH) if FAVICON_PATH.exists() else "assets/favicon.png"
